@@ -10,6 +10,8 @@
                     class="menu-list-item"
                     v-for="item in menuData"
                     :key="item.id"
+                    :class="{'active': item.isSelect}"
+                    @click="changeRouter(item)"
                 >
                     <img :src="item.img" alt="">
                     <span>{{item.label}}</span>
@@ -24,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 interface MenuData {
     id: number,
@@ -70,6 +72,29 @@ let menuData = ref<MenuData[]>([
     isSelect: false,
   },
 ])
+
+import {useRouter} from 'vue-router'
+const router = useRouter()
+// 点击进行切换
+const changeRouter = (item: MenuData) => {
+    menuData.value.forEach((obj) => {
+        obj.isSelect = false
+    })
+    item.isSelect = true
+    router.push({name: item.routerName})
+}
+
+// 监听路由变化
+watch(() => router.currentRoute.value, (newVal) => {
+    menuData.value.forEach((item) => {
+        item.isSelect = false
+    })
+    menuData.value.forEach((item) => {
+        if(item.routerName === newVal.name){
+            item.isSelect = true
+        }
+    })
+}, {immediate: true})
 
 
 </script>
