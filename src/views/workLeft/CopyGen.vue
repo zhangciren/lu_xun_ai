@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import {ElInput, ElMessage} from 'element-plus'
+import {ElMessage} from 'element-plus'
 import {ref} from 'vue'
 
 const textarea = ref<string>('')
