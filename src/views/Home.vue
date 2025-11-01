@@ -8,10 +8,11 @@
             <div class="menu-list">
                 <div 
                     class="menu-list-item"
-                    
+                    v-for="item in menuData"
+                    :key="item.id"
                 >
-                    <img src="" alt="">
-                    <span>item.label</span>
+                    <img :src="item.img" alt="">
+                    <span>{{item.label}}</span>
                 </div>
             </div>
         </div>
@@ -23,6 +24,53 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
+interface MenuData {
+    id: number,
+    label: string,
+    img: string,
+    routerName: string,
+    isSelect: boolean,
+}
+
+import img1 from '../assets/img/aI-retouching.png';
+import img2 from '../assets/img/copy-generation.png';
+import img3 from '../assets/img/image-generation.png';
+import img4 from '../assets/img/video-generation.png';
+
+
+let menuData = ref<MenuData[]>([
+  {
+    id: 0,
+    label: '灵感广场',
+    img: img1,
+    routerName: 'insSquare',
+    isSelect: true,
+  },
+  {
+    id: 1,
+    label: '文案生成',
+    img: img2,
+    routerName: 'copyGen',
+    isSelect: false,
+  }, 
+  {
+    id: 2,
+    label: '图片生成',
+    img: img3,
+    routerName: 'imageGen',
+    isSelect: false,
+  },
+  {
+    id: 3,
+    label: '视频生成',
+    img: img4,
+    routerName: 'videoGen',
+    isSelect: false,
+  },
+])
+
 
 </script>
 
