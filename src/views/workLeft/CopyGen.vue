@@ -125,7 +125,7 @@ const startCreate = async () => {
     // 显示加载
     loading.value = true
 
-    // 申请对话(接口文档：https://www.coze.cn/open/docs/developer_guides/chat_v3)
+    // 申请对话接口https://api.coze.cn/v3/chat  (接口文档：https://www.coze.cn/open/docs/developer_guides/chat_v3)
     let res = await fetch('https://api.coze.cn/v3/chat', {
         method: 'POST',
         headers: {
