@@ -133,7 +133,7 @@ const startCreate = async () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            bot_id: '7567750597747720232', // 智能体id
+            bot_id: '7567750597747720232', // 智能体id(这个智能体的链接 https://www.coze.cn/space/7369827218602278948/bot/7567750597747720232)
             user_id: '123123999',
             stream: true,
             additional_messages: [
