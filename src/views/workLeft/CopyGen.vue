@@ -129,12 +129,12 @@ const startCreate = async () => {
     let res = await fetch('https://api.coze.cn/v3/chat', {
         method: 'POST',
         headers: {
-            'Authorization': '',
+            'Authorization': 'Bearer pat_B4XFTGWfXgHCtEpPGBRtpyIkiH1Hgq19hvASThva524fFQUUKs5b8LGy5e6qTUfh', // token（智能体的凭证，会有有效期的，目前是30天有效期）
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            bot_id: '',
-            user_id: '',
+            bot_id: '7567750597747720232', // 智能体id
+            user_id: '123123999',
             stream: true,
             additional_messages: [
                 {
