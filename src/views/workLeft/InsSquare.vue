@@ -1,6 +1,6 @@
 <template>
     <div class="insSquare-container" ref="insSquareRef">
-        <el-scrollbar height="Scrollheight">
+        <el-scrollbar :height="Scrollheight">
             <div>
                 <div class="insSquare-t">
                     <img src="@/assets/img/swiper.png" alt="">
@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang='ts'>
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 // 引入瀑布流组建
@@ -81,6 +81,14 @@ let insData = ref<insData[]>([
 const changeRouter = (item: insData) => {
     router.push({name: item.pathName})
 }
+
+let insSquareRef = ref<HTMLElement>()
+let Scrollheight = ref<number>(0)
+onMounted(() => {
+  nextTick(() => {
+    Scrollheight.value = insSquareRef.value?.clientHeight || 0
+  })
+});
 
 </script>
 
