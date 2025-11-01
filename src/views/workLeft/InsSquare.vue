@@ -25,7 +25,7 @@
                 <div class="insSquare-b">
                     <div class="insSquare-b-title">灵感素材</div>
                     <div class="imgFlow">
-                        
+                        <Flow></Flow>
                     </div>
                 </div>
             </div>
@@ -37,6 +37,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
+// 引入瀑布流组建
+import Flow from '@/components/InsSquare/flow.vue'
 
 // 引入灵感工具的图片
 import img1 from '@/assets/img/insSquare-1.png'
