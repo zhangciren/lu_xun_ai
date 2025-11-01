@@ -10,7 +10,7 @@
                     class="menu-list-item"
                     
                 >
-                    <img src="item.img" alt="">
+                    <img src="" alt="">
                     <span>item.label</span>
                 </div>
             </div>
