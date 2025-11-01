@@ -129,6 +129,7 @@ const startCreate = async () => {
     let res = await fetch('https://api.coze.cn/v3/chat', {
         method: 'POST',
         headers: {
+            // 注意：很重要的一个点，要想api接口调用，发布智能体的时候一定要勾选API的选项
             'Authorization': 'Bearer pat_B4XFTGWfXgHCtEpPGBRtpyIkiH1Hgq19hvASThva524fFQUUKs5b8LGy5e6qTUfh', // token（智能体的凭证，会有有效期的，目前是30天有效期）
             'Content-Type': 'application/json'
         },
