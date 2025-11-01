@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="copy-generation-b-l-footer">
-                    <div class="start" >开始创作</div>
+                    <div class="start" @click="startCreate">开始创作</div>
                     <div class='delete' >清空内容</div>
                 </div>
             </div>
@@ -40,13 +40,14 @@
                 <div class="copy-generation-b-title">
                     <!-- 文案生成提示-->
                     <div class="loading-container">
-                        <!-- <span :class="startAi?'titleActive':''">copyTitle</span> -->
-                        <!-- <div class="title-loading" v-loading="loading"></div> -->
+                        <span :class="startAi?'titleActive':''">{{copyTitle}}</span>
+                        <div class="title-loading" v-loading="loading"></div>
                     </div>
                 </div>
                 <div class="copy-content">
                     <!-- 容器 -->
                     <el-input
+                        v-model="textContent"
                         style="width: 240px"
                         :rows="2"
                         resize='none'
@@ -61,9 +62,15 @@
 </template>
 
 <script lang="ts" setup>
+import {ElInput, ElMessage} from 'element-plus'
 import {ref} from 'vue'
 
 const textarea = ref<string>('')
+
+// 系统回复的内容
+const textContent = ref<string>('')
+const textareaRef = ref<InstanceType<typeof ElInput>>()
+let loading = ref<boolean>(false)
 
 interface RecommendData {
     id: number,
@@ -92,6 +99,123 @@ let recommendData = ref<RecommendData[]>([
 const changeUserInput = (item: RecommendData) => {
     textarea.value = item.content
 }
+
+// 是否开始流失输出
+let startFlow = ref<boolean>(false)
+// 是否开始创作
+let startAi = ref<boolean>(false)
+// 文案创作提示
+let copyTitle = ref<string>('文案生成中，请稍等...')
+// 点击开始创作
+const startCreate = async () => {
+    // 如果正在生成，否则返回
+    if(startFlow.value) {
+        ElMessage({
+            message: '请等待处理完成',
+            type: 'warning'
+        })
+        return
+    }
+    // 如果存在内容则清空
+    if (textContent.value) {
+        textContent.value = ''
+    }
+    // 开始创作
+    startAi.value = true
+    // 显示加载
+    loading.value = true
+
+    // 申请对话
+    let res = await fetch('https://api.coze.cn/v3/chat', {
+        method: 'POST',
+        headers: {
+            'Authorization': '',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            bot_id: '',
+            user_id: '',
+            stream: true,
+            additional_messages: [
+                {
+                    role: 'user',
+                    type: 'question',
+                    content_type: 'text',
+                    content: `${textarea.value}`
+                }
+            ]
+        })
+    })
+    if (res.status === 200) { // 流式输出
+        startFlow.value = true
+        // 创建reader对象
+        let reader = res.body.getReader()
+        // 创建decoder对象
+        let decoder = new TextDecoder('utf-8')
+        // 存储未完成的行片段
+        let partialData = '';
+        if (!reader) return;
+        while (true) {
+            // 获取流式数据
+            let {done, value} = await reader.read()
+            if (done) {
+                startAi.value = false;
+                // 提示加载完成
+                ElMessage({
+                    message: '文案生成成功',
+                    type: 'success'
+                })
+
+                loading.value = false
+                // 文案生成完成
+                startFlow.value = false
+                break
+            }
+            // 文案生成中
+            startFlow.value = true
+            // 转化流式数据
+            let chunk = decoder.decode(value, {stream: true})
+            partialData += chunk
+            // 处理可能的多个事件（按换行分割）
+            const lines = partialData.split('\n');
+            partialData = lines.pop() || ''; // 保留未完成的行
+            // 查找是否是完整的数据
+            let index = lines.findIndex((item) =>{
+                // 找到event:coversation.message.completed
+                return item == 'event:coversation.message.completed'
+            })
+            // 判断返回的是否是整体，因为流式输出完成后，它会返回一个整体内容
+            // 如果是-1，则不是完整数据，是流式数据的部分
+            if (index == -1) {
+                for(const line of lines) {
+                    // 如果以data: 开头
+                    if (line.startsWith('data:')) {
+                        const jsonData = line.replace('data:', '').trim();
+                        try {
+                            const parsed = JSON.parse(jsonData);
+                            if (parsed.content) {
+                                // 替换{}中的内容
+                                let content = parsed.content.replace(/{.*}/g,'').replace(/#|\*/g,'')
+                                textContent.value += content
+                                // 随着加载滚动
+                                // scrollBottom()
+                            }
+                        } catch (e) {
+                            console.error('解析JSON数据时出错:', e)
+                        }
+                    }
+                }
+            }
+        }
+
+    } else {
+        ElMessage({
+            message: '申请对话失败，请重试',
+            type: 'warning'
+        })
+    }
+}
+
 
 </script>
 
